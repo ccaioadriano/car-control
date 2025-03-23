@@ -6,8 +6,11 @@ export default function MainLayout() {
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen
         name="cadastrarManutencao"
-        options={{ headerShown: false }}
+        options={{
+          headerTitle: "Cadastrar Manutenção",
+        }}
       />
+      <Stack.Screen name="detalhes/[id]" />
     </Stack>
   );
 }

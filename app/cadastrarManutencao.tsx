@@ -19,11 +19,6 @@ export default function CadastrarManutencao() {
 
   return (
     <View style={styles.container}>
-      {/* Botão para voltar */}
-      <Pressable style={styles.backButton} onPress={() => router.back()}>
-        <Icons name="arrow-back" size={24} color="#007AFF" />
-      </Pressable>
-
       <Text style={styles.title}>Cadastrar Manutenção</Text>
 
       {/* Campo: Tipo */}
