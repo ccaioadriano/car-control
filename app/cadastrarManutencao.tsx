@@ -1,25 +1,20 @@
-import { useState } from "react";
+import { useForm, Controller } from "react-hook-form";
 import { View, Text, TextInput, Pressable, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons as Icons } from "@expo/vector-icons";
 
 export default function CadastrarManutencao() {
   const router = useRouter();
-  const [tipo, setTipo] = useState("");
-  const [data, setData] = useState("");
-  const [km, setKm] = useState("");
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
 
-  const salvarManutencao = () => {
-    if (!tipo || !data || !km) {
-      alert("Preencha todos os campos!");
-      return;
-    }
-
-    // Aqui você pode salvar a manutenção no estado global ou armazenamento local
-    console.log("Nova manutenção:", { tipo, data, km });
+  const salvarManutencao = (data: any) => {
+    console.log("Nova manutenção:", data);
     alert("Manutenção salva com sucesso!");
-
-    router.push("/"); // Volta para a tela principal
+    router.push("/");
   };
 
   return (
@@ -31,27 +26,62 @@ export default function CadastrarManutencao() {
 
       <Text style={styles.title}>Cadastrar Manutenção</Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Tipo de Manutenção (ex: Troca de óleo)"
-        value={tipo}
-        onChangeText={setTipo}
+      {/* Campo: Tipo */}
+      <Controller
+        control={control}
+        name="tipo"
+        rules={{ required: "Informe o tipo de manutenção" }}
+        render={({ field: { onChange, value } }) => (
+          <TextInput
+            style={[styles.input, errors.tipo && styles.inputError]}
+            placeholder="Tipo de Manutenção (ex: Troca de óleo)"
+            value={value}
+            onChangeText={onChange}
+          />
+        )}
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Data (ex: 20/03/2025)"
-        value={data}
-        onChangeText={setData}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Km Atual (ex: 52.000)"
-        value={km}
-        onChangeText={setKm}
-        keyboardType="numeric"
-      />
+      {errors.tipo?.message && <Text style={styles.errorText}>{errors.tipo.message.toString()}</Text>}
 
-      <Pressable style={styles.saveButton} onPress={salvarManutencao}>
+      {/* Campo: Data */}
+      <Controller
+        control={control}
+        name="data"
+        rules={{ required: "Informe a data" }}
+        render={({ field: { onChange, value } }) => (
+          <TextInput
+            style={[styles.input, errors.data && styles.inputError]}
+            placeholder="Data (ex: 20/03/2025)"
+            value={value}
+            onChangeText={onChange}
+          />
+        )}
+      />
+      {errors.data && (
+        <Text style={styles.errorText}>{errors.data?.message?.toString()}</Text>
+      )}
+
+      {/* Campo: Quilometragem */}
+      <Controller
+        control={control}
+        name="km"
+        rules={{ required: "Informe a quilometragem" }}
+        render={({ field: { onChange, value } }) => (
+          <TextInput
+            style={[styles.input, errors.km && styles.inputError]}
+            placeholder="Km Atual (ex: 52.000)"
+            value={value}
+            onChangeText={onChange}
+            keyboardType="numeric"
+          />
+        )}
+      />
+      {errors.km?.message && <Text style={styles.errorText}>{errors.km.message.toString()}</Text>}
+
+      {/* Botão de Salvar */}
+      <Pressable
+        style={styles.saveButton}
+        onPress={handleSubmit(salvarManutencao)}
+      >
         <Text style={styles.saveButtonText}>Salvar Manutenção</Text>
       </Pressable>
     </View>
@@ -84,6 +114,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     borderWidth: 1,
     borderColor: "#ddd",
+  },
+  inputError: {
+    borderColor: "red",
+  },
+  errorText: {
+    color: "red",
+    marginBottom: 10,
   },
   saveButton: {
     backgroundColor: "#007AFF",
