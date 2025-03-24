@@ -1,13 +1,13 @@
 # Car Control App
 
 # Home
-![App Screenshot](images/readme/home.jpeg)
+![App Screenshot](/assets/images/readme/home.jpeg)
 
 # Cadastro de Manutenções
-![App Screenshot](images/readme/cadastro.jpeg)
+![App Screenshot](/assets/images/readme/cadastro.jpeg)
 
 # Detalhes da manutenção
-![App Screenshot](images/readme/detalhes.jpeg)
+![App Screenshot](/assetsimages/readme/detalhes.jpeg)
 
 
 
