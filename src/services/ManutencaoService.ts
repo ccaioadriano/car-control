@@ -3,6 +3,17 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const STORAGE_KEY = "manutencoes_veiculo";
 
+
+type Response = {
+    success: boolean;
+    message: string;
+}
+
+
+/**
+ * @todo Criar um tipo de manutenção
+ * @todo Alterar o calculo da proxima kilometragem de acordo com o tipo de manutenção
+ * */
 export default class ManutencaoService {
     /**
      * Obtém a lista de manutenções salvas.
@@ -39,15 +50,17 @@ export default class ManutencaoService {
      * Cria uma nova manutenção.
      * @param manutencao Objeto contendo os dados da manutenção
      */
-    public async criarManutencao(manutencao: Manutencao): Promise<string> {
+    public async criarManutencao(manutencao: Manutencao): Promise<Response> {
         try {
             const manutencoes = await this.obterManutencoes();
-            manutencoes.push(manutencao);
+
+            manutencoes.push({ ...manutencao, id: manutencoes.length + 1, proxKm: manutencao.km + 5000 });
+
             await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(manutencoes));
-            return "Manutenção criada com sucesso";
+            return { success: true, message: "Manutenção criada com sucesso" };
         } catch (error) {
             console.error("Erro ao criar manutenção:", error);
-            return "Erro ao criar manutenção";
+            return { success: false, message: "Erro ao criar manutenção" };
         }
     }
 

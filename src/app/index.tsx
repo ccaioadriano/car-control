@@ -1,17 +1,16 @@
+import colors from "@/constants/Colors";
+import Manutencao from "@/types/Manutencao";
+import { Ionicons as Icons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
-  View,
-  Text,
   FlatList,
   Pressable,
   StyleSheet,
-  TouchableOpacity,
-  Alert,
+  Text,
+  TouchableWithoutFeedback,
+  View
 } from "react-native";
-import colors from "@/constants/Colors";
-import { Link, useRouter } from "expo-router";
-import { Ionicons as Icons } from "@expo/vector-icons";
-import Manutencao from "@/types/Manutencao";
 import ManutencaoService from "../services/ManutencaoService";
 
 export default function Home() {
@@ -52,37 +51,36 @@ export default function Home() {
               : `📅 ${item.proxData}`;
 
           return (
-            <View style={styles.card}>
-              {/* Ícone para ver detalhes */}
-              <Link href={`/detalhes/${item.id}`} asChild>
-                <TouchableOpacity style={styles.iconButton}>
-                  <Icons
-                    name="ellipsis-horizontal-outline"
-                    size={24}
-                    color="#555"
-                  />
-                </TouchableOpacity>
-              </Link>
+            <TouchableWithoutFeedback
+              key={item.id}
 
-              <Text style={styles.manutencaoTipo}>{item.tipo}</Text>
-              <Text style={styles.manutencaoInfo}>
-                📅 Data: {item.data ? item.data.toLocaleString() : ""}
-              </Text>
-              <Text style={styles.manutencaoInfo}>📌 Km: {item.km} km</Text>
-              <Text style={styles.manutencaoInfo}>
-                ⚠️ Prioridade: {item.prioridade}
-              </Text>
-              {item.custo && (
+              onPress={() => {
+                router.push(`/detalhes/${item.id}`);
+              }}
+            >
+              <View style={styles.card}>
+                {/* Ícone para ver detalhes */}
+
+                <Text style={styles.manutencaoTipo}>{item.tipo}</Text>
                 <Text style={styles.manutencaoInfo}>
-                  💰 Custo: R$ {item.custo}
+                  📅 Data: {item.data ? item.data.toLocaleString() : ""}
                 </Text>
-              )}
-              {item.proxKm || item.proxData ? (
+                <Text style={styles.manutencaoInfo}>📌 Km: {item.km} km</Text>
                 <Text style={styles.manutencaoInfo}>
-                  🚗 Próxima Manutenção: {proximaManutencao}
+                  ⚠️ Prioridade: {item.prioridade}
                 </Text>
-              ) : null}
-            </View>
+                {item.custo && (
+                  <Text style={styles.manutencaoInfo}>
+                    💰 Custo: R$ {item.custo}
+                  </Text>
+                )}
+                {item.proxKm || item.proxData ? (
+                  <Text style={styles.manutencaoInfo}>
+                    🚗 Próxima Manutenção: {proximaManutencao}
+                  </Text>
+                ) : null}
+              </View>
+            </TouchableWithoutFeedback>
           );
         }}
       />
@@ -126,13 +124,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
-    position: "relative",
-  },
-  iconButton: {
-    position: "absolute",
-    top: 10,
-    right: 10,
-    padding: 5,
   },
   manutencaoTipo: {
     fontSize: 18,

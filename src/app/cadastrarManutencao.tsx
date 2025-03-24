@@ -20,8 +20,10 @@ export default function CadastrarManutencao() {
   const salvarManutencao = async (data: Manutencao) => {
     try {
       let response = await manutencaoService.criarManutencao(data);
-      alert(response);
-      router.push("/");
+      if (response && response.success) {
+        alert(response.message);
+        router.push("/");
+      }
     } catch (error) {
       console.error("Erro ao salvar manutenção:", error);
       alert("Erro ao salvar manutenção");
@@ -59,7 +61,7 @@ export default function CadastrarManutencao() {
           <TextInput
             style={[styles.input, errors.data && styles.inputError]}
             placeholder="Data (ex: 20/03/2025)"
-            value={value ? value.toDateString() : ""}
+            value={value}
             onChangeText={onChange}
           />
         )}
@@ -134,7 +136,7 @@ export default function CadastrarManutencao() {
           <TextInput
             style={styles.input}
             placeholder="Próxima Data (Opcional)"
-            value={value ? value.toDateString() : ""}
+            value={value}
             onChangeText={onChange}
           />
         )}
