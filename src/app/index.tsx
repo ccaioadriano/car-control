@@ -11,64 +11,24 @@ import {
 import colors from "@/constants/Colors";
 import { Link, useRouter } from "expo-router";
 import { Ionicons as Icons } from "@expo/vector-icons";
+import Manutencao from "@/types/Manutencao";
+import ManutencaoService from "../services/ManutencaoService";
 
 export default function Home() {
   const router = useRouter();
+  const manutencaoService = new ManutencaoService();
 
   // Quilometragem atual do veículo
   const [kmAtual, setKmAtual] = useState(103000);
 
   // Lista de manutenções
-  const [manutencoes, setManutencoes] = useState([
-    {
-      id: "1",
-      tipo: "Troca de óleo",
-      data: "10/03/2025",
-      km: 100000,
-      prioridade: "Alta",
-      custo: "R$ 250,00",
-      proxKm: 105000, // Próxima manutenção após 5.000 km
-      proxData: "10/06/2025", // Opcional, mas pode existir
-    },
-    {
-      id: "2",
-      tipo: "Troca de velas",
-      data: "15/03/2025",
-      km: 102000,
-      prioridade: "Média",
-      custo: null,
-      proxKm: 107000, // Próxima manutenção após 5.000 km
-      proxData: null, // Apenas por km
-    },
-    {
-      id: "3",
-      tipo: "Amortecedores",
-      data: "15/03/2025",
-      km: 102000,
-      prioridade: "Média",
-      custo: null,
-      proxKm: 102500, 
-      proxData: null,
-    },
-  ]);
-
-  // Função para verificar se alguma manutenção está atrasada
-  const verificarManutencoesAtrasadas = () => {
-    const atrasadas = manutencoes.filter(
-      (item) => item.proxKm && kmAtual >= item.proxKm
-    );
-
-    if (atrasadas.length > 0) {
-      Alert.alert(
-        "⚠️ Manutenção Pendente!",
-        "Existe(m) manutenção(ões) que já deveriam ter sido feitas. Verifique!"
-      );
-    }
-  };
+  const [manutencoes, setManutencoes] = useState<Manutencao[]>([]);
 
   useEffect(() => {
-    verificarManutencoesAtrasadas();
-  }, [kmAtual, manutencoes]);
+    manutencaoService.obterManutencoes().then((data) => {
+      setManutencoes(data);
+    });
+  }, [manutencoes]);
 
   return (
     <View style={styles.container}>
@@ -81,7 +41,7 @@ export default function Home() {
       {/* Lista de Manutenções */}
       <FlatList
         data={manutencoes}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.id?.toString()}
         renderItem={({ item }) => {
           // Define a próxima manutenção: Data ou Km (o que vier primeiro)
           let proximaManutencao =
@@ -105,19 +65,23 @@ export default function Home() {
               </Link>
 
               <Text style={styles.manutencaoTipo}>{item.tipo}</Text>
-              <Text style={styles.manutencaoInfo}>📅 Data: {item.data}</Text>
+              <Text style={styles.manutencaoInfo}>
+                📅 Data: {item.data ? item.data.toLocaleString() : ""}
+              </Text>
               <Text style={styles.manutencaoInfo}>📌 Km: {item.km} km</Text>
               <Text style={styles.manutencaoInfo}>
                 ⚠️ Prioridade: {item.prioridade}
               </Text>
               {item.custo && (
                 <Text style={styles.manutencaoInfo}>
-                  💰 Custo: {item.custo}
+                  💰 Custo: R$ {item.custo}
                 </Text>
               )}
-              <Text style={styles.manutencaoInfo}>
-                🔜 Próxima: {proximaManutencao}
-              </Text>
+              {item.proxKm || item.proxData ? (
+                <Text style={styles.manutencaoInfo}>
+                  🚗 Próxima Manutenção: {proximaManutencao}
+                </Text>
+              ) : null}
             </View>
           );
         }}
